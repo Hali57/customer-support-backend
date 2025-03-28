@@ -9,10 +9,10 @@ app = FastAPI()
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust for security if needed
+    allow_origins=["http://localhost:5173", "https://customer-support-bot-frontend.vercel.app"],  # Adjust if needed
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly allow these methods
+    allow_headers=["Content-Type", "Authorization"],  # Allow common headers
 )
 
 # Load model and tokenizer
@@ -27,6 +27,11 @@ model.to(device)
 @app.get("/")
 def home():
     return {"message": "Customer Support Chatbot API is running!"}
+
+@app.options("/predict/")
+async def preflight():
+    """Handles the OPTIONS request sent by browsers before making a POST request."""
+    return {}
 
 @app.post("/predict/")
 async def predict(request: Request):
